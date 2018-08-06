@@ -1,3 +1,4 @@
+// Blame all whitespace problems on Visual Studio....
 #include <windows.h>
 #include <stdio.h>
 #define WIN32_LEAN_AND_MEAN // We don"t need lots of extra headers
