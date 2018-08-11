@@ -49,6 +49,18 @@ void decodeIOCTLWithPrint(DWORD dwIoctl) {
         lpszDeviceName, dwAccess, lpszAccessType, dwControlCode, dwMethod, lpszMethod);
 	return(0);
 }
+typedef BOOL(WINAPI* IsNtAdmin)(DWORD, LPDWORD); // Prototype of function from: https://source.winehq.org/WineAPI/IsNTAdmin.html
+void printAdminStatus() {
+  HMODULE hLibrary = LoadLibraryA("advpack.dll");
+  IsNtAdmin fIsNtAdmin = (IsNtAdmin)GetProcAddress(hLibrary, "IsNTAdmin");
+  BOOL bOut = fIsNtAdmin(0, 0);
+  if (bOut == FALSE) {
+    printf("[NOTE] -- It is highly recommended that you run this program as an admin --\n");
+  }
+  else {
+    printf("[i] Running under admin\n");
+  }
+}
 
 int main(int argc, char* argv[]) {
 if (argc > 2 || argc < 2) {
@@ -57,6 +69,7 @@ if (argc > 2 || argc < 2) {
   printf("[?] WinObj (Windows Sysinternals) may help you find the write device name if it is unknown\n");
   return(-1);
 }
+  printAdminStatus(); // Check if running as admin
   if (strlen(argv[1]) >= 0x900) { // Try to prevent heap overflow
     printf("[!] Input string too large");
     return(-1);
