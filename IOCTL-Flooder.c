@@ -76,6 +76,7 @@ if (argc > 2 || argc < 2) {
   }
   else {
   LPVOID lpWorkArea = malloc(0x1000);
+	memset(lpWorkArea, 0x00, 0x1000);
   memcpy((BYTE*)lpWorkArea + 0x4, argv[1], strlen(argv[1])); // Leave room for front chars
   memset(lpWorkArea, '\\\\', 2); // Risky manual string addition 
   memset((BYTE*)lpWorkArea + 0x2, '\.', 1);
@@ -90,6 +91,7 @@ if (argc > 2 || argc < 2) {
   DWORD dwCurrentIoctl = 0;
   DWORD dwErrorsNotSupported = 0;
   DWORD dwErrorSuccess = 0;
+  DWORD dwErrorInvalid = 0;
   DWORD dwLastError = 0; // For result checking of the flood process
   if (hDriver == INVALID_HANDLE_VALUE) { // Make sure we have a valid handle
     printf("[!] Unable to get a handle on the device\n");
@@ -122,6 +124,9 @@ if (argc > 2 || argc < 2) {
         dwErrorSuccess++; // Sometimes returned because the IOCTL is not supported but
         // the drivers devs might not have added a return statement
         break;
+      case ERROR_INVALID_FUNCTION: // 0x01
+        dwErrorInvalid++; // Usually becuase the IOCTL isn't supported
+        break;
 			default: 
         printf("------------------------------\n"); // For style!
         printf("[i] Possible IOCTL: 0x%X\n", dwCurrentIoctl);
@@ -134,8 +139,10 @@ if (argc > 2 || argc < 2) {
     }
     printf("[i] Number of ERROR_NOT_SUPPORTED (s): %d\n", dwErrorsNotSupported);
     printf("[i] Number of ERROR_SUCCESS (s): %d\n", dwErrorSuccess);
+    printf("[i] Number of ERROR_INVALID_FUNCTION (s): %d\n", dwErrorInvalid);
     printf("[i] ERROR_NOT_SUPPORTED are usually from non-valid IOCTLs");
     printf("[i] ERROR_SUCCESS are usually from missing return values in the driver codes\n");
+    printf("[i] ERROR_INVALID_FUNCTION are usually from non-valid IOCTLs\n");
    }
   return(0);
 }
