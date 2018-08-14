@@ -5,3 +5,7 @@ This program doesn't fuzz a driver, in the sense of trying random data types and
 IOCTL-Flooder [Target Device]
 
 Target Device: A valid device name (usually created through IoCreateSymbolicLink)
+# Notes
+Please feel free to modify this to fir your needs (Open Source for a reason!)
+Also remember that not all drivers use IOCTLs
+
